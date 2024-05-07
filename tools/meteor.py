@@ -1,5 +1,7 @@
 import sys
 import nltk
+from nltk.tokenize import word_tokenize
+
 nltk.download('wordnet')
 
 if __name__ == "__main__":
@@ -11,5 +13,11 @@ if __name__ == "__main__":
     with open(data_path, "r") as file:
         target = file.readlines()
 
-    scores = [nltk.meteor([t.lower()], p.lower()) for t,p in zip(target, pred)]
-    print(sum(scores)/len(scores))
+    # Chia các câu dữ liệu dự đoán và câu tham chiếu thành danh sách các từ (pre-tokenized hypothesis)
+    pred_tokenized = [word_tokenize(p.lower()) for p in pred]
+    target_tokenized = [word_tokenize(t.lower()) for t in target]
+
+    # Tính toán METEOR
+    scores = [nltk.meteor([t], p) for t, p in zip(target_tokenized, pred_tokenized)]
+    average_score = sum(scores) / len(scores)
+    print(average_score)
